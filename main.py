@@ -1,16 +1,16 @@
-# This is a sample Python script.
+import numpy as np
+import nnfs
+import matplotlib.pyplot as plt
+from nnfs.datasets import spiral_data
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+nnfs.init()
 
 
-# Press the green button in the gutter to run the script.
+def main():
+    x, y = spiral_data(samples=100, classes=3)
+    plt.scatter(x[:, 0], x[:, 1], c=y, cmap='brg')
+    plt.show()
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    main()
