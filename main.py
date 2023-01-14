@@ -1,7 +1,7 @@
 import nnfs
 from nnfs.datasets import spiral_data
 from layer_dense import LayerDense
-from activation_relu import ActivationReLU
+from activation import ActivationReLU
 
 nnfs.init()
 
