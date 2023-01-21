@@ -15,7 +15,7 @@ def main():
     activation1 = ActivationReLU()
     dense2 = LayerDense(64, 3)
     loss_activation = ActivationSoftmaxLossCategoricalCrossEntropy()
-    optimizer = OptimizerSGD(decay=1e-3)
+    optimizer = OptimizerSGD(decay=1e-3, momentum=0.9)
     for epoch in range(10001):
         dense1.forward(x)
         activation1.forward(dense1.output)
