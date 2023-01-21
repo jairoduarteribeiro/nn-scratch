@@ -15,7 +15,7 @@ def main():
     activation1 = ActivationReLU()
     dense2 = LayerDense(64, 3)
     loss_activation = ActivationSoftmaxLossCategoricalCrossEntropy()
-    optimizer = OptimizerSGD(learning_rate=0.85)
+    optimizer = OptimizerSGD(decay=1e-3)
     for epoch in range(10001):
         dense1.forward(x)
         activation1.forward(dense1.output)
@@ -26,13 +26,18 @@ def main():
             y = np.argmax(y, axis=1)
         accuracy = np.mean(predictions == y)
         if not epoch % 100:
-            print(f'epoch: {epoch}, acc: {accuracy:.3f}, loss: {loss:.3f}')
+            print(f'epoch: {epoch}, ' +
+                  f'acc: {accuracy:.3f}, ' +
+                  f'loss: {loss:.3f}, ' +
+                  f'lr: {optimizer.current_learning_rate}')
         loss_activation.backward(loss_activation.output, y)
         dense2.backward(loss_activation.d_inputs)
         activation1.backward(dense2.d_inputs)
         dense1.backward(activation1.d_inputs)
+        optimizer.pre_update_params()
         optimizer.update_params(dense1)
         optimizer.update_params(dense2)
+        optimizer.post_update_params()
 
 
 if __name__ == '__main__':
