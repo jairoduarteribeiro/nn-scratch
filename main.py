@@ -4,7 +4,7 @@ from nnfs.datasets import spiral_data
 from layer_dense import LayerDense
 from activation import ActivationReLU
 from loss import ActivationSoftmaxLossCategoricalCrossEntropy
-from optimizer import OptimizerAdaGrad
+from optimizer import OptimizerRMSProp
 
 nnfs.init()
 
@@ -15,7 +15,7 @@ def main():
     activation1 = ActivationReLU()
     dense2 = LayerDense(64, 3)
     loss_activation = ActivationSoftmaxLossCategoricalCrossEntropy()
-    optimizer = OptimizerAdaGrad(decay=1e-4)
+    optimizer = OptimizerRMSProp(learning_rate=0.02, decay=1e-5, rho=0.999)
     for epoch in range(10001):
         dense1.forward(x)
         activation1.forward(dense1.output)

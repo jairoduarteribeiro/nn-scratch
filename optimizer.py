@@ -64,3 +64,24 @@ class OptimizerAdaGrad(Optimizer):
         layer.biases += \
             -self.current_learning_rate * layer.d_biases / \
             (np.sqrt(layer.bias_cache) + self.epsilon)
+
+
+class OptimizerRMSProp(OptimizerAdaGrad):
+    def __init__(self, learning_rate=1.0, decay=0.0, epsilon=1e-7, rho=0.9):
+        super().__init__(learning_rate, decay, epsilon)
+        self.rho = rho
+
+    def update_params(self, layer):
+        if not hasattr(layer, 'weight_cache'):
+            layer.weight_cache = np.zeros_like(layer.weights)
+            layer.bias_cache = np.zeros_like(layer.biases)
+        layer.weight_cache = \
+            self.rho * layer.weight_cache + (1 - self.rho) * layer.d_weights ** 2
+        layer.bias_cache = \
+            self.rho * layer.bias_cache + (1 - self.rho) * layer.d_biases ** 2
+        layer.weights += \
+            -self.current_learning_rate * layer.d_weights / \
+            (np.sqrt(layer.weight_cache) + self.epsilon)
+        layer.biases += \
+            -self.current_learning_rate * layer.d_biases / \
+            (np.sqrt(layer.bias_cache) + self.epsilon)
