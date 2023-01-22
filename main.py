@@ -1,7 +1,7 @@
 import numpy as np
 import nnfs
 from nnfs.datasets import spiral_data
-from layer_dense import LayerDense
+from layer import LayerDense, LayerDropout
 from activation import ActivationReLU
 from loss import ActivationSoftmaxLossCategoricalCrossEntropy
 from optimizer import OptimizerAdam
@@ -11,16 +11,18 @@ nnfs.init()
 
 def main():
     x, y = spiral_data(samples=1000, classes=3)
-    dense1 = LayerDense(2, 512, weight_regularizer_l2=5e-4, bias_regularizer_l2=5e-4)
+    dense1 = LayerDense(2, 64, weight_regularizer_l2=5e-4, bias_regularizer_l2=5e-4)
     activation1 = ActivationReLU()
-    dense2 = LayerDense(512, 3)
+    dropout1 = LayerDropout(0.1)
+    dense2 = LayerDense(64, 3)
     loss_activation = ActivationSoftmaxLossCategoricalCrossEntropy()
-    optimizer = OptimizerAdam(learning_rate=0.02, decay=5e-7)
+    optimizer = OptimizerAdam(learning_rate=0.05, decay=5e-5)
     # Train the model
     for epoch in range(10001):
         dense1.forward(x)
         activation1.forward(dense1.output)
-        dense2.forward(activation1.output)
+        dropout1.forward(activation1.output)
+        dense2.forward(dropout1.output)
         data_loss = loss_activation.forward(dense2.output, y)
         regularization_loss = \
             loss_activation.loss.regularization_loss(dense1) + loss_activation.loss.regularization_loss(dense2)
@@ -38,7 +40,8 @@ def main():
                   f'lr: {optimizer.current_learning_rate}')
         loss_activation.backward(loss_activation.output, y)
         dense2.backward(loss_activation.d_inputs)
-        activation1.backward(dense2.d_inputs)
+        dropout1.backward(dense2.d_inputs)
+        activation1.backward(dropout1.d_inputs)
         dense1.backward(activation1.d_inputs)
         optimizer.pre_update_params()
         optimizer.update_params(dense1)
